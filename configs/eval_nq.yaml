@@ -1,0 +1,37 @@
+# Evaluation config for Natural Questions dataset
+
+# Inherit from default
+_base_: "default.yaml"
+
+# Dataset specific
+eval:
+  datasets:
+    - name: "natural_questions"
+      path: "data/datasets/nq/"
+      split: "dev"
+      max_samples: 1000  # Subset for faster evaluation
+  
+  # NQ-specific metrics
+  metrics:
+    - exact_match
+    - f1
+    - groundedness_rate
+    - abstention_accuracy
+    - false_refusal_rate
+    - answerable_accuracy
+    - unanswerable_accuracy
+
+# Adjusted for NQ characteristics
+retrieval:
+  top_k: 100
+
+rerank:
+  top_k: 5
+
+generation:
+  max_new_tokens: 128  # NQ answers tend to be short
+
+# Verification tuned for NQ
+verification:
+  groundedness_threshold: 0.65
+  abstain_threshold: 0.35

@@ -1,0 +1,39 @@
+# Evaluation config for HotpotQA dataset (multi-hop reasoning)
+
+# Inherit from default
+_base_: "default.yaml"
+
+# Dataset specific
+eval:
+  datasets:
+    - name: "hotpotqa"
+      path: "data/datasets/hotpot/"
+      split: "dev"
+      max_samples: 1000
+  
+  metrics:
+    - exact_match
+    - f1
+    - groundedness_rate
+    - abstention_accuracy
+    - supporting_facts_em  # HotpotQA specific
+    - supporting_facts_f1
+
+# Multi-hop requires more context
+retrieval:
+  top_k: 150
+
+rerank:
+  top_k: 8  # More passages for multi-hop
+
+generation:
+  max_new_tokens: 200
+
+# Stricter verification for multi-hop
+verification:
+  groundedness_threshold: 0.75  # Higher bar for complex reasoning
+  abstain_threshold: 0.45
+  
+  # Multi-hop specific
+  claim_extraction:
+    method: "clause"  # Finer-grained for multi-hop

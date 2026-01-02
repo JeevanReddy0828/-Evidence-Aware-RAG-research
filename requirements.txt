@@ -1,0 +1,43 @@
+# Core ML/NLP
+torch>=2.0.0
+transformers>=4.35.0
+sentence-transformers>=2.2.2
+datasets>=2.14.0
+
+# Vector Search
+faiss-cpu>=1.7.4
+chromadb>=0.4.0
+
+# Sparse Retrieval
+rank-bm25>=0.2.2
+
+# NLI / Verification
+scipy>=1.11.0
+
+# Utilities
+numpy>=1.24.0
+pandas>=2.0.0
+tqdm>=4.65.0
+pyyaml>=6.0
+python-dotenv>=1.0.0
+
+# Evaluation
+scikit-learn>=1.3.0
+rouge-score>=0.1.2
+
+# API (optional)
+openai>=1.0.0
+anthropic>=0.8.0
+
+# Web Interface
+gradio>=4.0.0
+
+# Development
+pytest>=7.4.0
+black>=23.0.0
+isort>=5.12.0
+
+# Notebook support
+jupyter>=1.0.0
+matplotlib>=3.7.0
+seaborn>=0.12.0

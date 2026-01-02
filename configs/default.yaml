@@ -1,0 +1,135 @@
+# Default configuration for Evidence-Aware RAG
+
+# Document Processing
+ingest:
+  chunk_size: 512
+  chunk_overlap: 50
+  min_chunk_size: 100
+  separators: ["\n\n", "\n", ". ", " "]
+
+# Embedding Model
+embedding:
+  model_name: "sentence-transformers/all-MiniLM-L6-v2"
+  batch_size: 32
+  normalize: true
+  dimension: 384
+
+# Index Settings
+index:
+  dense:
+    type: "faiss"  # faiss or chromadb
+    index_type: "IVFFlat"  # Flat, IVFFlat, HNSW
+    nlist: 100  # for IVFFlat
+    nprobe: 10  # for IVFFlat search
+  bm25:
+    k1: 1.5
+    b: 0.75
+    epsilon: 0.25
+
+# Retrieval
+retrieval:
+  top_k: 100  # Initial candidates
+  hybrid:
+    enabled: true
+    bm25_weight: 0.3
+    dense_weight: 0.7
+    fusion_method: "rrf"  # rrf (reciprocal rank fusion) or linear
+
+# Reranking
+rerank:
+  enabled: true
+  model: "cross-encoder/ms-marco-MiniLM-L-6-v2"
+  top_k: 5  # Final passages after reranking
+  batch_size: 16
+
+# Generation
+generation:
+  # Local model (default)
+  provider: "local"  # local, openai, anthropic
+  model: "mistralai/Mistral-7B-Instruct-v0.2"
+  
+  # Generation parameters
+  max_new_tokens: 256
+  temperature: 0.1
+  top_p: 0.9
+  do_sample: false
+  
+  # Prompt settings
+  system_prompt: |
+    You are a helpful assistant that answers questions based on provided context.
+    Always cite your sources using [1], [2], etc.
+    If the context doesn't contain enough information, say "I don't have enough information to answer this question."
+  
+  citation_style: "inline"  # inline, footnote, none
+
+# Verification (Core Contribution)
+verification:
+  enabled: true
+  
+  # NLI-based verification
+  nli:
+    model: "microsoft/deberta-large-mnli"
+    batch_size: 8
+  
+  # Thresholds
+  groundedness_threshold: 0.7  # Answer is grounded if score >= this
+  abstain_threshold: 0.4       # Abstain if score < this
+  clarify_range: [0.4, 0.7]    # Ask for clarification in this range
+  
+  # Claim extraction
+  claim_extraction:
+    method: "sentence"  # sentence, clause, or llm
+    min_claim_length: 5
+  
+  # Scoring
+  aggregation: "mean"  # mean, min, or weighted
+  
+  # Abstention behavior
+  abstention:
+    enabled: true
+    message: "I don't have enough evidence in the provided documents to answer this question confidently."
+    suggest_clarification: true
+
+# Evaluation
+eval:
+  datasets:
+    - name: "natural_questions"
+      path: "data/datasets/nq/"
+      split: "dev"
+    - name: "hotpotqa"
+      path: "data/datasets/hotpot/"
+      split: "dev"
+    - name: "out_of_domain"
+      path: "data/datasets/ood/"
+      split: "test"
+  
+  metrics:
+    - exact_match
+    - f1
+    - groundedness_rate
+    - abstention_accuracy
+    - false_refusal_rate
+    - latency
+  
+  # Ablation settings
+  ablations:
+    - name: "no_verification"
+      verification.enabled: false
+    - name: "no_rerank"
+      rerank.enabled: false
+    - name: "bm25_only"
+      retrieval.hybrid.enabled: false
+      retrieval.method: "bm25"
+    - name: "dense_only"
+      retrieval.hybrid.enabled: false
+      retrieval.method: "dense"
+
+# Logging
+logging:
+  level: "INFO"
+  save_predictions: true
+  output_dir: "outputs/"
+
+# Hardware
+device: "auto"  # auto, cuda, cpu
+seed: 42
