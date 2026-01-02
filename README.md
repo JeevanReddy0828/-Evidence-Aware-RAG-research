@@ -188,16 +188,6 @@ print(f"Confidence: {result.groundedness_score:.2f}")
 print(f"Citations: {result.citations}")
 ```
 
-## 📝 Citation
-
-```bibtex
-@article{yourname2025evidenceaware,
-  title={Evidence-Aware Retrieval-Augmented Generation via Lightweight Groundedness Verification},
-  author={Your Name},
-  journal={arXiv preprint arXiv:2025.XXXXX},
-  year={2025}
-}
-```
 
 ## 📄 License
 
